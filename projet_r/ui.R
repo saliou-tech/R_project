@@ -9,6 +9,8 @@
 
 library(shiny)
 library(shinydashboard)
+library(DT)
+library(shinycssloaders)
 
 # Define UI for application that draws a histogram
 
@@ -39,8 +41,10 @@ ui <- dashboardPage(skin='blue',
         ),
     
         #tags$h3("veuilllez choisir la periode d'etude"),
-        dateInput("date3", "Date:", value = "202°-03-01", format = "mm/dd/yy"),
+        dateRangeInput("dates", label = h4("veuillez choisir l'interalle de temps d'etude")),
         
+        tags$hr(),
+        fluidRow(column(12, verbatimTextOutput("value"))) ,       
         # Custom CSS to hide the default logout panel
         tags$head(tags$style(HTML('.shiny-server-account { display: none; }'),    tags$hr(),
                              
@@ -50,37 +54,52 @@ ui <- dashboardPage(skin='blue',
         uiOutput("userpanel")
     ),
     dashboardBody(
-        tabItems(
-            tabItem(tabName = "dashboard",
-                    h2("Dashboard tab content")
+     tabItems(
+         tabItem(tabName = "dashboard",
+                  
             ),
             
             tabItem(tabName = "widgets",
-                    h2("Widgets tab content")
+                   
             )
         ),
-        tags$br(),
-        
        
         fluidRow(
-            # A static infoBox
-            infoBox("New Orders", 10 * 2, icon = icon("credit-card")),
-            # Dynamic infoBoxes
-            infoBoxOutput("progressBox"),
-            infoBoxOutput("approvalBox")
+            column(width = 12,
+                   
+                   box(title = span(icon("table"), " Donness covid19 du ministere de la sante du senegal"),
+                       footer = "jeu de donnees provenant du ministere de la sante indiquant les nombres de cas positifs,contacts communautaires ,déces liés au coronavirus .",
+                       status = "info",
+                       solidHeader = F,
+                       collapsible = TRUE, width = 12, collapsed = F,
+                       
+                       DTOutput("dt_covid")
+                   ),
+                   tags$br(),
+                   fluidRow(
+                       box(title = span(icon("table"), " Statistics"),
+                           solidHeader = F, status = "warning",
+                           collapsible = TRUE, width = 12,
+                         valueBoxOutput("valuebox_total_cases") %>% withSpinner(color = "#5bc0de"),
+                           valueBoxOutput("valuebox_total_deaths") %>% withSpinner(color = "#5bc0de"),
+                          valueBoxOutput("valuebox_death_rate") %>% withSpinner(color = "#5bc0de"),
+                           valueBoxOutput("valuebox_total_active") %>% withSpinner(color = "#5bc0de"),
+                           valueBoxOutput("valuebox_total_recov") %>% withSpinner(color = "#5bc0de"),
+                          valueBoxOutput("valuebox_positivetests_rate") %>% withSpinner(color = "#5bc0de"),
+                          valueBoxOutput("valuebox_num_tests_pop") %>% withSpinner(color = "#5bc0de")
+                         # valueBoxOutput("valuebox_active_per_mil") %>% withSpinner(color = "#5bc0de"),
+                         
+                       )
+                   ),
+                   
+                   
+                   
+                   
+                   
+                   )
         ),
-        
-        # infoBoxes with fill=TRUE
-        fluidRow(
-            infoBox("New Orders", 10 * 2, icon = icon("credit-card"), fill = TRUE),
-            infoBoxOutput("progressBox2"),
-            infoBoxOutput("approvalBox2")
-        ),
-        
-        fluidRow(
-            # Clicking this will increment the progress amount
-            box(width = 4, actionButton("count", "Increment progress"))
-        ),
+       
+       
         tags$br(),
         fluidRow(    column(width = 6, plotOutput(outputId = "graphique1"), 
         ),   
